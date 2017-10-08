@@ -1,0 +1,77 @@
+# Create group folder
+mkdir /scratch/fall2017/44
+cd /scratch/fall2017/44
+
+# Clone yocto kernel
+git clone git://git.yoctoproject.org/linux-yocto-3.19
+cd linux-yocto-3.19
+
+# Change the tag to the required version v3.19.2
+git checkout 'v3.19.2'
+cd ../
+
+# Clone the required environment variable setup files
+cp /scratch/files/environment-setup-i586-poky-linux* ./
+
+# Clone the required provided testing kernel and filesystem
+cp /scratch/files/bzImage-qemux86.bin ./
+cp /scratch/files/core-image-lsb-sdk-qemux86.ext4 ./
+
+#
+# Building the kernel
+#
+
+# SOURCE BASED ON YOUR PREFERRED SHELL!
+source environment-setup-i586-poky-linux # Bash
+source environment-setup-i586-poky-linux.csh # CSH
+cd linux-yocto-3.19
+
+# Clean the previous build files (if any)
+make clean
+
+# Create the tags for editors to make life easier
+make tags
+make TAGS
+
+# Copy the required kernel configuration file
+cp /scratch/files/config-3.19.2-yocto-standard ./.config
+
+# Adjust kernel settings
+make menuconfig
+# Adjust the name of the local version
+# Under general settings there is "Local Version"
+# Change to something like -group44-hw1s
+# ENSURE YOU DO NOT SELECT A 64 BIT KERNEL!
+# Save the kernel as .config and exit menuconfig 
+
+# Compile the kernel with 4 threads(our thread count limit) 
+make -j4 bzImage
+
+# To test a kernel, compile it, then with the kernel image
+# Generall the kernel is compiled to $KERNEL_SOURCE/arch/x86/boot/bzImage
+# Please note this command will seem to do nothing, but it is just waiting
+# on a later step before it seems to do anything.
+qemu-system-i386 -gdb tcp::5544 -S -nographic \
+    -kernel linux-yocto-3.19/arch/x86/boot/bzImage \
+    -drive file=core-image-lsb-sdk-qemux86.ext4,if=virtio \
+    -enable-kvm -net none -usb -localtime --no-reboot \
+    --append "root=/dev/vda rw console=ttyS0 debug"
+
+# Once QEMU has launched, you then have to connect to it with GDB
+# to actually launch the system, as it starts in a paused state.
+# Please ensure you have sourced the correct file from before
+$GDB linux-yocto-3.19/vmlinux
+
+# Once you have launched gdb, you'll be prompted with a terminal
+# To connect to the paused virtual machine you'll need to connect
+# with TCP on the port we're assigned, 5544.
+target remote:5544
+
+# This will connect you to the qemu terminal, now you'll want to
+# tell the virtual machine to begin booting.
+continue
+
+# Great, now the virtual machine is running. You should see a
+# login prompt. The username is root without a password. You
+# are now within the virtual machine where you executed the
+# qemu-system-i386 command. Tada, assignment completed.
