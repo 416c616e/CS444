@@ -1,8 +1,8 @@
 /*
-Authors: 	Alan Neads & David Corbelli
-Course:	 	cs444 f17	
+Authors:        Alan Neads & David Corbelli
+Course:         cs444 f17       
 References: Assembly code used to determine if CPU supports rdrand is referenced in-part from 
-			https://codereview.stackexchange.com/questions/147656/checking-if-cpu-supports-rdrand 
+                        https://codereview.stackexchange.com/questions/147656/checking-if-cpu-supports-rdrand 
 
 */
 
@@ -50,19 +50,19 @@ pthread_cond_t consumerCondition;
 int main( int argc, char** argv ) {
     producerJobListIndex = 0;
     consumerJobListIndex = 0;
-	init_genrand(time(NULL));
-	int randGen;
-	int output;
-   // pthread_mutex_init( &bufferJobListLock, NULL );
+    init_genrand(time(NULL));
+    int randGen;
+    int output;
+    // pthread_mutex_init( &bufferJobListLock, NULL );
 
-  //  setupSignalCatching();
-  //  setupThreads();
+    //  setupSignalCatching();
+    //  setupThreads();
 
-   // waitThreads();
-   randGen = checkRand();
-   output = getRandomNumberRange(2, 9, randGen);
+    // waitThreads();
+    randGen = checkRand();
+    output = getRandomNumberRange(2, 9, randGen);
    
-   return 0;
+    return 0;
 };
 
 void setupSignalCatching() {
@@ -111,48 +111,42 @@ void waitThreads() {
 
 int getRandomNumberRange( int floor, int ceil, int randGen ) {
     int num = 0;
-	int num2 = 0;
-	if(randGen == 0){
-		printf("using rdrand");
-		_rdrand_generate(&num);
-	}
-	else{
-		printf("using Mersene Twister");
-		num = abs(genrand_int32());
-		num2 = abs(genrand_int32());
-		//printf("%d\n", num);
-		//printf("%d\n", num2);
-	}
-	num = floor + num % (ceil + 1 - floor);
-	num2 = floor + num % (ceil + 1 - floor);
-	printf("%d\n", num);
-	printf("%d\n", num2);
-	return num;
+    int num2 = 0;
+    if(randGen == 0){
+        printf("using rdrand");
+        _rdrand_generate(&num);
+    }
+    else{
+        printf("using Mersene Twister");
+        num = abs(genrand_int32());
+        num2 = abs(genrand_int32());
+        //printf("%d\n", num);
+        //printf("%d\n", num2);
+    }
+    num = floor + num % (ceil + 1 - floor);
+    num2 = floor + num % (ceil + 1 - floor);
+    printf("%d\n", num);
+    printf("%d\n", num2);
+    return num;
 };
 
-int checkRand(){
-	int eax;
-	int ecx;
-	
-	eax = 0x01;
-	
-	__asm__ __volatile__(
-                         "cpuid;"
-                         : "=a"(eax), "=c"(ecx)
-                         : "a"(eax)
-                         );
-						 
-	 printf("The value of the ecx register is %08x.\n", ecx);
-	 
-	if(ecx & bit_RDRND){
+int checkRand() {
+    int eax;
+    int ecx;
+    eax = 0x01;
+    __asm__ __volatile__("cpuid;": "=a"(eax), "=c"(ecx) : "a"(eax));
+                                                 
+    printf("The value of the ecx register is %08x.\n", ecx);
+         
+    if(ecx & bit_RDRND){
         //use rdrand
         printf("using rdrand\n");
-		return 0;
+        return 0;
     }
     else{
         //use mt19937
         printf("use mt19937");
-		return 1;
-	}
-	
+        return 1;
+    }
+        
 };
