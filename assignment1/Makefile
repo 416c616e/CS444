@@ -1,5 +1,5 @@
 all:
-	gcc concurrency.c -lpthread -o concurrency
+	gcc concurrency.c -o concurrency -lpthread
 
 clean:
 	rm concurrency
