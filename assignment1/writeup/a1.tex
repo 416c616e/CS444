@@ -1,0 +1,194 @@
+\documentclass[letterpaper,10pt]{article}
+
+                                      
+\usepackage{amssymb}                                         
+\usepackage{amsmath}                                         
+\usepackage{amsthm}                                          
+\usepackage{pdflscape}
+\usepackage{longtable}
+\usepackage{alltt}                                           
+\usepackage{float}
+\usepackage{color}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{balance}
+\usepackage{enumitem}
+%\usepackage{pstricks, pst-node}
+\usepackage[dvips]{graphicx}
+\usepackage{geometry}
+\geometry{textheight=8.5in, textwidth=6in}
+
+
+%random comment
+
+\newcommand{\cred}[1]{{\color{red}#1}}
+\newcommand{\cblue}[1]{{\color{blue}#1}}
+
+\newcommand{\toc}{\tableofcontents}
+
+
+\def\name{D. Kevin McGrath}
+\def \GroupName{		Group 44}
+\def \GroupMemberOne{			David Corbelli}
+\def \GroupMemberTwo{			Alan Neads}
+\def \ProjectName{		Project 1: Getting Acquainted and Concurrency 1}
+
+
+
+\newpage
+
+
+%pull in the necessary preamble matter for pygments output
+\input{pygments.tex}
+
+%% The following metadata will show up in the PDF properties
+% \hypersetup{
+%   colorlinks = false,
+%   urlcolor = black,
+%   pdfauthor = {\name},
+%   pdfkeywords = {cs311 ``operating systems'' files filesystem I/O},
+%   pdftitle = {CS 311 Project 1: UNIX File I/O},
+%   pdfsubject = {CS 311 Project 1},
+%   pdfpagemode = UseNone
+% }
+
+\parindent = 0.0 in
+\parskip = 0.1 in
+
+\begin{document}
+
+\begin{titlepage}
+    \pagenumbering{gobble}
+    
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \Huge Operating Systems 2  \par
+           	\Huge [cs444 f17] \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\ProjectName}\par
+            \vspace{.5in}
+           
+            {\large Prepared by }\par
+           
+            % 5. comment out the line below this one if you do not wish to name your team
+   
+            \vspace{5pt}
+            \textbf{\Huge\ \GroupMemberOne}\par
+            }
+            \textbf{\Huge\ \GroupMemberTwo}\par
+            \vspace{60pt}
+         
+        
+    
+\end{titlepage}
+\newpage
+\tableofcontents
+
+%input the pygmentized output of mt19937ar.c, using a (hopefully) unique name
+%this file only exists at compile time. Feel free to change that.
+
+\newpage
+\section{Command Log}
+\VerbatimInput{command-log.txt} 
+
+\newpage
+\section{Qemu Flags}
+\begin{tabular}{lp{12cm}}
+  \label{tabular:legend:git-log}
+  \textbf{Flag} & \textbf{Description} \\
+  -gdb & \texttt{Wait for gdb connection} \\
+  -S & \texttt{Pause CPU at startup} \\
+  -nographic & \texttt{Redirect serial I/O to console}. \\
+  -kernel & \texttt{Specify what file to use as kernel image}. \\
+  -drive & \texttt{Specify file system}. \\
+  -enable-kvm & \texttt{Enable KVM full virtualization support}. \\
+  -net & \texttt{Specify zero network devices}. \\
+  -usb & \texttt{Enables USB driver}. \\
+  -localtime & \texttt{Set UTC offset to local time}. \\
+  -noreboot & \texttt{Exit instead of rebooting}. \\
+  -append & \texttt{Use command line as kernel command line}. \\
+
+\end{tabular}
+
+
+\section{Concurrency Follow-Up}
+\textbf{1. What do you think the main point of this assignment is?} \\ \\
+\textnormal{The main point of the assignment was to learn the basic functions needed to implement a solution running in concurrency, while maintaining the integrity of a buffer receiving input and output calls concurrently.}
+
+\textbf{2. How did you personally approach the problem?} \\ \\
+\textnormal{We first took a look at the documentation of pthread's implementation to ensure we were comfortable with the function calls we were to make use of. 
+We then outlined each of the operations that the producer and consumer threads needed to make and then moved on to outlining the main function. 
+Our group was not familiar with how to determine whether or not a CPU would be able to run rdrand or if Mersene Twister would be necessary, so we conducted research online into the process required and what kind of assembly code would be needed.
+We were then able to follow our outline and write our solution to the problem}
+
+\textbf{3. How did you ensure the solution was correct?} \\ \\
+\textnormal{Result}
+
+\textbf{4. What did you learn?} \\ \\
+\textnormal{We have learned how to use process threading to run multiple operations concurrenctly and to use mutex locking to control thread access to an object.}
+\newpage
+\begin{landscape}
+\section{Version Control Log}
+
+\begin{tabular}{lp{12cm}}
+  \label{tabular:legend:git-log}
+  \textbf{acronym} & \textbf{meaning} \\
+  V & \texttt{version} \\
+  tag & \texttt{git tag} \\
+  MF & Number of \texttt{modified files}. \\
+  AL & Number of \texttt{added lines}. \\
+  DL & Number of \texttt{deleted lines}. \\
+\end{tabular}
+
+\bigskip
+
+\begin{table}[h]
+\centering
+\caption{Project 1 Version Control}
+\begin{longtable}{|rllp{13cm}rrr|}
+\hline \multicolumn{1}{|c}{\textbf{V}} & \multicolumn{1}{c}{\textbf{tag}}
+& \multicolumn{1}{c}{\textbf{date}}
+& \multicolumn{1}{c}{\textbf{commit message}} & \multicolumn{1}{c}{\textbf{MF}}
+& \multicolumn{1}{c}{\textbf{AL}} & \multicolumn{1}{c|}{\textbf{DL}} \\ \hline
+\endhead
+
+\hline \multicolumn{7}{|r|}{} \\ \hline
+\endfoot
+
+\hline \hline
+\endlastfoot
+
+\hline 1 &  & 2017-10-07 & {Added all of the files required for the kernel and using it within a virtual machine. Added a command log of how to setup all of the files from scratch(for ease of writeup)} & 7 & 251 & 0 \\
+\hline
+\end{longtable}
+\end{table}
+\end{landscape}
+
+\newpage
+\section{Work Log}
+
+\begin{table}[h]
+\centering
+\caption{Project 1 Work Log}
+\begin{tabular}{| p{0.3\linewidth}| p{0.6\linewidth} | p{0.3\linewidth} |}
+\hline Time & Development \\
+\hline 2017-10-5 11:00-13:00   & Create directory at \textbackslash scratch\textbackslash fall2017\textbackslash 44 and clone linux-yocto-3.19 and setup virtual machine \\
+\hline 2017-10-6 16:00-20:00   & Begin formatting LaTex document, read over concurrency problem together to understand requirements, research pthread and mutex uses, and start writing consumer and producer functions     \\
+\hline 2017-10-7 15:00-18:00   & Run git init and made first commit; wrote assembly code to determine which random number generator to use      \\
+\hline 2017-10-8 14:00-17:00   & Install dependencies to use latex-git-log; Finalize concurrency code    \\
+\hline 2017-10-9 15:00-17:00   & Finish LaTex writeup and prepare submission    \\
+\hline 
+\end{tabular}
+\end{table}
+
+%\emph{\textbf{\color{red}This is italicized and red}}
+
+%\section*{Appendix 1: Source Code}
+%\input{__mt19937ar.c.tex}
+
+\end{document}
