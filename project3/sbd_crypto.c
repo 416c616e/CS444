@@ -138,7 +138,20 @@ static struct block_device_operations sbd_crypto_ops = {
 };
 
 static int __init sbd_crypto_init(void) {
-	/*
+    	/*
+         * setup crypto cipher based on module choice (default AES)
+         */
+        printk( "sbd_crypto: setting up crypto with key %s using cipher algorithm %s.\n", cryptoKey, cryptoAlg );
+        cipher = crypto_alloc_cipher( cryptoAlg, 0, 0 );
+        if ( !cipher ) {
+            printk( KERN_WARNING "sbd_crypto: unable to initialize crypto with key %s and cipher algorithm %s!\n", cryptoKey, cryptoAlg );
+            goto out;
+        } else {
+            crypto_cipher_setkey( cipher, cryptoKey, strlen(cryptoKey) );
+            printk( "sbd_crypto: set up crypto successfully." );
+        }
+
+        /*
 	 * Set up our internal device.
 	 */
 	Device.size = nsectors * logical_block_size;
@@ -161,7 +174,7 @@ static int __init sbd_crypto_init(void) {
 		printk(KERN_WARNING "sbd_crypto: unable to get major number\n");
 		goto out;
 	}
-	/*
+        /*
 	 * And the gendisk structure.
 	 */
 	Device.gd = alloc_disk(16);
