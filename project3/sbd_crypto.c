@@ -44,6 +44,21 @@ module_param(nsectors, int, 0);
 #define KERNEL_SECTOR_SIZE 512
 
 /*
+ * crypto key setup
+ * I guess charp is a char pointer macro?
+ */
+static char* cryptoKey = "hunter42";
+module_param(cryptoKey, charp, 0);
+
+static char* cryptoAlg = "aes";
+module_param(cryptoAlg, charp, 0);
+
+/*
+ * crypto cipher container
+ */
+static struct crypto_cipher *cipher;
+
+/*
  * Our request queue.
  */
 static struct request_queue *Queue;
