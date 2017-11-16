@@ -6,7 +6,10 @@
  * Redistributable under the terms of the GNU GPL.
  * 
  * Source: http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31
- * Modifications: http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31/comment-page-2/#comment-148884
+ * Modifications: http://blog.superpat.com/2010/05/04/a-simple-block-driver-for-linux-kernel-2-6-31/comment-page-2/#comment-148884i
+ *
+ * References:
+ * [1]
  */
 
 #include <linux/module.h>
@@ -81,14 +84,29 @@ static void sbd_crypto_transfer(struct sbd_crypto_device *dev, sector_t sector,
 	unsigned long offset = sector * logical_block_size;
 	unsigned long nbytes = nsect * logical_block_size;
 
+        int cipherBlockSize = crypto_cipher_blocksize(cipher);
+
 	if ((offset + nbytes) > dev->size) {
 		printk (KERN_NOTICE "sbd_crypto: Beyond-end write (%ld %ld)\n", offset, nbytes);
 		return;
 	}
-	if (write)
-		memcpy(dev->data + offset, buffer, nbytes);
-	else
-		memcpy(buffer, dev->data + offset, nbytes);
+	if (write) {
+                //no longer use this, as the crypto function does this
+		//memcpy(dev->data + offset, buffer, nbytes);
+                
+                int i;
+                for( i = 0; i < nbytes; i += cipherBlockSize ) {
+                    crypto_cipher_encrypt_one( cipher, dev->data + offset + i, buffer + i );
+                }
+	} else {
+                //no longer use this, as the crypto function does this
+		//memcpy(buffer, dev->data + offset, nbytes);
+                
+                int i;
+                for( i = 0; i < nbytes; i+= cipherBlockSize ) {
+                    crypto_cipher_decrypt_one( cipher, buffer + i, dev->data + offset + i );
+                }
+        }
 }
 
 static void sbd_crypto_request(struct request_queue *q) {
@@ -140,6 +158,7 @@ static struct block_device_operations sbd_crypto_ops = {
 static int __init sbd_crypto_init(void) {
     	/*
          * setup crypto cipher based on module choice (default AES)
+         * after cipher is prepared setup the crypto key
          */
         printk( "sbd_crypto: setting up crypto with key %s using cipher algorithm %s.\n", cryptoKey, cryptoAlg );
         cipher = crypto_alloc_cipher( cryptoAlg, 0, 0 );
@@ -200,6 +219,7 @@ out:
 
 static void __exit sbd_crypto_exit(void)
 {
+        crypto_free_cipher(cipher);
 	del_gendisk(Device.gd);
 	put_disk(Device.gd);
 	unregister_blkdev(major_num, "sbd_crypto");
